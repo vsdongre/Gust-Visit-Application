@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Visit Log – Guest Visit Application{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Visit Log</h2>
+  <a class="btn btn-success" href="{{ url_for('checkin') }}">+ Check In Guest</a>
+</div>
+
+{% set active_visits = visits | selectattr('check_out_time', 'none') | list %}
+{% set past_visits = visits | rejectattr('check_out_time', 'none') | list %}
+
+<!-- Currently On-Site -->
+<h5 class="mt-2">Currently On-Site
+  <span class="badge bg-success">{{ active_visits | length }}</span>
+</h5>
+
+{% if active_visits %}
+<div class="table-responsive mb-4">
+  <table class="table table-bordered table-hover align-middle">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Guest Name</th>
+        <th>Contact</th>
+        <th>Purpose</th>
+        <th>Host</th>
+        <th>Check-In Time</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for visit in active_visits %}
+      <tr>
+        <td>{{ visit.id }}</td>
+        <td>{{ visit.guest_name }}</td>
+        <td>{{ visit.contact }}</td>
+        <td>{{ visit.purpose }}</td>
+        <td>{{ visit.host }}</td>
+        <td>{{ visit.check_in_time }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('checkout', visit_id=visit.id) }}"
+                onsubmit="return confirm('Check out {{ visit.guest_name }}?');">
+            <button type="submit" class="btn btn-sm btn-warning">Check Out</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="text-muted">No guests currently on-site.</p>
+{% endif %}
+
+<!-- Past Visits -->
+<h5 class="mt-2">Past Visits
+  <span class="badge bg-secondary">{{ past_visits | length }}</span>
+</h5>
+
+{% if past_visits %}
+<div class="table-responsive">
+  <table class="table table-bordered table-hover align-middle">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Guest Name</th>
+        <th>Contact</th>
+        <th>Purpose</th>
+        <th>Host</th>
+        <th>Check-In Time</th>
+        <th>Check-Out Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for visit in past_visits %}
+      <tr class="table-secondary">
+        <td>{{ visit.id }}</td>
+        <td>{{ visit.guest_name }}</td>
+        <td>{{ visit.contact }}</td>
+        <td>{{ visit.purpose }}</td>
+        <td>{{ visit.host }}</td>
+        <td>{{ visit.check_in_time }}</td>
+        <td>{{ visit.check_out_time }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="text-muted">No past visits recorded.</p>
+{% endif %}
+{% endblock %}
