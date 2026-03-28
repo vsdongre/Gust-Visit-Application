@@ -160,7 +160,6 @@ def test_visit_log_search(client):
 
 def test_visit_log_status_filter(client):
     with app.app_context():
-        from datetime import datetime, timezone
         active = Visit(guest_name='ActiveGuest', guest_email='a@x.com', host_name='H', purpose='P')
         completed = Visit(guest_name='DoneGuest', guest_email='d@x.com', host_name='H', purpose='P',
                           check_out=datetime.now(timezone.utc))
