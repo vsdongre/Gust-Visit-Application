@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Check In Guest – Guest Visit Application{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">Guest Check-In</h4>
+      </div>
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('checkin') }}" novalidate>
+          <div class="mb-3">
+            <label for="guest_name" class="form-label">Guest Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="guest_name" name="guest_name"
+                   placeholder="Full name" required>
+          </div>
+          <div class="mb-3">
+            <label for="contact" class="form-label">Contact (Phone / Email) <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="contact" name="contact"
+                   placeholder="e.g. +1-555-0100 or guest@example.com" required>
+          </div>
+          <div class="mb-3">
+            <label for="purpose" class="form-label">Purpose of Visit <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="purpose" name="purpose"
+                   placeholder="e.g. Interview, Meeting, Delivery" required>
+          </div>
+          <div class="mb-3">
+            <label for="host" class="form-label">Host (Person Being Visited) <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="host" name="host"
+                   placeholder="Employee name" required>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Check In</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
