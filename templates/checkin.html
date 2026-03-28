@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Check In Guest – Guest Visit Application{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-person-plus me-2"></i>Guest Check-In</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('checkin') }}" novalidate>
+                    <h6 class="text-muted mb-3 text-uppercase fw-semibold" style="font-size:.75rem;">Guest Information</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <label class="form-label" for="guest_name">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="guest_name" name="guest_name"
+                                value="{{ form_data.get('guest_name', '') }}"
+                                placeholder="e.g. Jane Smith" required>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label" for="guest_email">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="guest_email" name="guest_email"
+                                value="{{ form_data.get('guest_email', '') }}"
+                                placeholder="e.g. jane@example.com" required>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label" for="guest_phone">Phone Number</label>
+                            <input type="tel" class="form-control" id="guest_phone" name="guest_phone"
+                                value="{{ form_data.get('guest_phone', '') }}"
+                                placeholder="e.g. +1 555-0100">
+                        </div>
+                    </div>
+
+                    <h6 class="text-muted mb-3 text-uppercase fw-semibold" style="font-size:.75rem;">Visit Details</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <label class="form-label" for="host_name">Host Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="host_name" name="host_name"
+                                value="{{ form_data.get('host_name', '') }}"
+                                placeholder="e.g. John Doe" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="purpose">Purpose of Visit <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="purpose" name="purpose"
+                                value="{{ form_data.get('purpose', '') }}"
+                                placeholder="e.g. Business meeting, Interview, Delivery…" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="notes">Additional Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2"
+                                placeholder="Any additional information…">{{ form_data.get('notes', '') }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-circle me-1"></i>Check In
+                        </button>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

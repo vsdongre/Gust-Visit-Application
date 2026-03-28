@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Visit #{{ visit.id }} – Guest Visit Application{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('visit_log') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Back to Log
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Visit #{{ visit.id }}</h5>
+                {% if visit.is_checked_in %}
+                    <span class="badge bg-success fs-6">Active</span>
+                {% else %}
+                    <span class="badge bg-secondary fs-6">Completed</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase fw-semibold mb-3" style="font-size:.75rem;">Guest Information</h6>
+                <dl class="row mb-4">
+                    <dt class="col-sm-4">Name</dt>
+                    <dd class="col-sm-8">{{ visit.guest_name }}</dd>
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8">{{ visit.guest_email }}</dd>
+                    {% if visit.guest_phone %}
+                    <dt class="col-sm-4">Phone</dt>
+                    <dd class="col-sm-8">{{ visit.guest_phone }}</dd>
+                    {% endif %}
+                </dl>
+
+                <h6 class="text-muted text-uppercase fw-semibold mb-3" style="font-size:.75rem;">Visit Details</h6>
+                <dl class="row mb-4">
+                    <dt class="col-sm-4">Host</dt>
+                    <dd class="col-sm-8">{{ visit.host_name }}</dd>
+                    <dt class="col-sm-4">Purpose</dt>
+                    <dd class="col-sm-8">{{ visit.purpose }}</dd>
+                    <dt class="col-sm-4">Check In</dt>
+                    <dd class="col-sm-8">{{ visit.check_in.strftime('%Y-%m-%d %H:%M') }}</dd>
+                    <dt class="col-sm-4">Check Out</dt>
+                    <dd class="col-sm-8">
+                        {% if visit.check_out %}
+                            {{ visit.check_out.strftime('%Y-%m-%d %H:%M') }}
+                        {% else %}
+                            <em class="text-muted">Not yet checked out</em>
+                        {% endif %}
+                    </dd>
+                    {% if visit.duration %}
+                    <dt class="col-sm-4">Duration</dt>
+                    <dd class="col-sm-8">{{ visit.duration }}</dd>
+                    {% endif %}
+                    {% if visit.notes %}
+                    <dt class="col-sm-4">Notes</dt>
+                    <dd class="col-sm-8">{{ visit.notes }}</dd>
+                    {% endif %}
+                </dl>
+
+                {% if visit.is_checked_in %}
+                <form method="POST" action="{{ url_for('checkout', visit_id=visit.id) }}">
+                    <button type="submit" class="btn btn-danger"
+                        onclick="return confirm('Check out {{ visit.guest_name }}?')">
+                        <i class="bi bi-box-arrow-right me-1"></i>Check Out Guest
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

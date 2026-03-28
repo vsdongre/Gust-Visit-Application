@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Visit Log – Guest Visit Application{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0"><i class="bi bi-journal-text me-2 text-primary"></i>Visit Log</h1>
+    <a href="{{ url_for('checkin') }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-person-plus me-1"></i>Check In Guest
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body py-3">
+        <form method="GET" action="{{ url_for('visit_log') }}" class="row g-2 align-items-end">
+            <div class="col-sm-6 col-md-5">
+                <label class="form-label mb-1 small">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" name="search" value="{{ search }}"
+                        placeholder="Guest name, email, host, purpose…">
+                </div>
+            </div>
+            <div class="col-sm-4 col-md-3">
+                <label class="form-label mb-1 small">Status</label>
+                <select class="form-select" name="status">
+                    <option value="all" {% if status == 'all' %}selected{% endif %}>All Visits</option>
+                    <option value="active" {% if status == 'active' %}selected{% endif %}>Currently In</option>
+                    <option value="completed" {% if status == 'completed' %}selected{% endif %}>Checked Out</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-outline-primary">Filter</button>
+                {% if search or status != 'all' %}
+                <a href="{{ url_for('visit_log') }}" class="btn btn-outline-secondary ms-1">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        {% if visits %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Guest</th>
+                        <th>Host</th>
+                        <th>Purpose</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for visit in visits %}
+                    <tr>
+                        <td class="text-muted">{{ visit.id }}</td>
+                        <td>
+                            <div class="fw-semibold">{{ visit.guest_name }}</div>
+                            <small class="text-muted">{{ visit.guest_email }}</small>
+                        </td>
+                        <td>{{ visit.host_name }}</td>
+                        <td>{{ visit.purpose }}</td>
+                        <td>
+                            <span title="{{ visit.check_in.strftime('%Y-%m-%d %H:%M') }}">
+                                {{ visit.check_in.strftime('%b %d, %H:%M') }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if visit.check_out %}
+                                {{ visit.check_out.strftime('%b %d, %H:%M') }}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if visit.duration %}
+                                {{ visit.duration }}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if visit.is_checked_in %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Completed</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('visit_detail', visit_id=visit.id) }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            {% if visit.is_checked_in %}
+                            <form method="POST" action="{{ url_for('checkout', visit_id=visit.id) }}" class="d-inline ms-1">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Check out {{ visit.guest_name }}?')">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if pagination.pages > 1 %}
+        <div class="d-flex justify-content-center py-3">
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('visit_log', page=pagination.prev_num, search=search, status=status) }}">
+                            &laquo;
+                        </a>
+                    </li>
+                    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if p %}
+                            <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('visit_log', page=p, search=search, status=status) }}">{{ p }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('visit_log', page=pagination.next_num, search=search, status=status) }}">
+                            &raquo;
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-journal display-4 d-block mb-3 opacity-25"></i>
+            No visits found{% if search %} matching "<strong>{{ search }}</strong>"{% endif %}.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
